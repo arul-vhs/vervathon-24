@@ -9,9 +9,9 @@
 
 ## README.md must consist of the following information:
 
-#### Team Name -
-#### Problem Statement - 
-#### Team Leader Email -
+#### Team Name - Solvents
+#### Problem Statement - Educarion with ai and engagment
+#### Team Leader Email -tharunm.engineer@gmail.com
 
 ## A Brief of the Prototype:
 This prototype is a PDF Summarizer and Quiz Generator web application, enhanced with an AI-powered chat feature. Here's a brief summary of the functionality:
