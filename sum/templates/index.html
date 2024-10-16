@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Text Summarizer</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Text Summarizer</h1>
+        <form action="/summarize" method="post" enctype="multipart/form-data">
+            <label for="file_type">Select Type:</label>
+            <select name="file_type" id="file_type" required>
+                <option value="pdf">PDF</option>
+                <option value="ppt">PPT</option>
+                <option value="youtube">YouTube Link</option>
+            </select>
+
+            <div id="file_input">
+                <label for="file">Upload File:</label>
+                <input type="file" name="file" accept=".pdf,.ppt" />
+            </div>
+
+            <div id="youtube_input" style="display:none;">
+                <label for="youtube_link">YouTube Link:</label>
+                <input type="url" name="youtube_link" placeholder="Enter YouTube link" />
+            </div>
+
+            <button type="submit">Summarize</button>
+        </form>
+
+        {% if simplified_text %}
+            <h2>Simplified Text:</h2>
+            <p>{{ simplified_text }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        const fileTypeSelect = document.getElementById('file_type');
+        const fileInput = document.getElementById('file_input');
+        const youtubeInput = document.getElementById('youtube_input');
+
+        fileTypeSelect.addEventListener('change', function() {
+            if (this.value === 'youtube') {
+                fileInput.style.display = 'none';
+                youtubeInput.style.display = 'block';
+            } else {
+                fileInput.style.display = 'block';
+                youtubeInput.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

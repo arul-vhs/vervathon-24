@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1, h2 {
+            color: #4a4a4a;
+            margin: 20px 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .quiz-question {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .quiz-question p {
+            margin: 0;
+            font-weight: bold;
+        }
+        .options {
+            margin-top: 10px;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+        .chat-box {
+            margin-top: 30px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .chat-response {
+            margin: 10px 0;
+            padding: 5px;
+            border-radius: 5px;
+            background: #f1f1f1;
+            position: relative;
+        }
+        .user-message {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .ai-response {
+            color: #28a745;
+            font-weight: bold;
+        }
+        form input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Summary</h1>
+        <p>{{ summary }}</p>
+
+        <h2>Quiz</h2>
+        <form action="/chat" method="post" id="quiz-form">
+            {% for question in quiz_questions %}
+                <div class="quiz-question">
+                    <p>{{ question.question }}</p>
+                    <div class="options">
+                        {% for option in question.options %}
+                            <input type="radio" name="answer{{ loop.index }}" value="{{ option }}" required> {{ option }}<br>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            <input type="submit" value="Submit Quiz">
+        </form>
+
+        <h2>Chat Box</h2>
+        <div class="chat-box">
+            <form id="chat-form" onsubmit="return sendChatMessage();">
+                <input type="text" id="chat-input" placeholder="Ask something about the summary..." required>
+                <input type="submit" value="Send">
+            </form>
+            <div id="chat-response"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Your App Name. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function sendChatMessage() {
+            const message = document.getElementById('chat-input').value;
+            const chatResponseDiv = document.getElementById('chat-response');
+
+            chatResponseDiv.innerHTML += `<div class="chat-response user-message"><strong>You:</strong> ${message}</div>`;
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `message=${encodeURIComponent(message)}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                chatResponseDiv.innerHTML += `<div class="chat-response ai-response"><strong>AI:</strong> ${data}</div>`;
+                chatResponseDiv.scrollTop = chatResponseDiv.scrollHeight; // Scroll to bottom
+            });
+
+            document.getElementById('chat-input').value = '';
+            return false; // Prevent form submission
+        }
+    </script>
+</body>
+</html>

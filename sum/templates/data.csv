@@ -1,0 +1,13 @@
+CustomerID,Gender,MaritalStatus,YearsOnBook,Income,Age,AttritionFlag,RelationshipCount
+1,Male,Married,1,35000,25,Attrited,1
+2,Male,Married,2,45000,30,Existing,2
+3,Male,Single,3,55000,35,Attrited,3
+4,Male,Single,4,75000,40,Existing,4
+5,Male,Divorced,5,95000,45,Attrited,5
+...
+2995,Female,Divorced,1,130000,60,Existing,6
+2996,Female,Married,2,35000,65,Attrited,1
+2997,Female,Single,3,45000,70,Existing,2
+2998,Female,Single,4,55000,25,Attrited,3
+2999,Female,Divorced,5,75000,30,Existing,4
+3000,Female,Married,1,95000,35,Attrited,5

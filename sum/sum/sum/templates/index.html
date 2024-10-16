@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Summarizer and Quiz Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Document Summarizer and Quiz Generator</h1>
+        <form id="uploadForm">
+            <input type="file" name="file" accept=".pdf, .pptx" required>
+            <button type="submit">Upload</button>
+        </form>
+        
+        <div id="summarySection" style="display:none;">
+            <h2>Summary</h2>
+            <p id="summaryText"></p>
+            <h2>Quiz</h2>
+            <div id="quizSection"></div>
+            <button id="checkResults">Check Results</button>
+            <div id="result"></div>
+        </div>
+
+        <h2>Chat with AI</h2>
+        <div id="chatSection">
+            <input type="text" id="chatInput" placeholder="Ask something...">
+            <button id="sendChat">Send</button>
+            <div id="chatOutput"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let quizData; // Variable to store quiz data
+
+            $("#uploadForm").on("submit", function(e) {
+                e.preventDefault();
+                let formData = new FormData(this);
+                $.ajax({
+                    url: '/upload',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        $("#summaryText").text(data.summary);
+                        quizData = data.quiz; // Store quiz data
+                        generateQuiz(quizData);
+                        $("#summarySection").show();
+                    },
+                    error: function(err) {
+                        alert("Error uploading file: " + err.responseText);
+                    }
+                });
+            });
+
+            function generateQuiz(quiz) {
+                let quizHtml = '';
+                quiz.forEach((q, index) => {
+                    quizHtml += `<div class="quiz-question">
+                                    <p>${q.question}</p>`;
+                    q.options.forEach(option => {
+                        quizHtml += `<label><input type="radio" name="question${index}" value="${option}">${option}</label><br>`;
+                    });
+                    quizHtml += `</div>`;
+                });
+                $("#quizSection").html(quizHtml);
+            }
+
+            $("#checkResults").on("click", function() {
+                let score = 0;
+                let totalQuestions = quizData.length; // Total questions from stored data
+
+                $("input[type='radio']:checked").each(function() {
+                    const selectedAnswer = $(this).val();
+                    const questionIndex = $(this).attr("name").replace("question", "");
+                    if (quizData[questionIndex].answer === selectedAnswer) {
+                        score++;
+                    }
+                });
+                $("#result").text(`You scored ${score} out of ${totalQuestions}`);
+            });
+
+            $("#sendChat").on("click", function() {
+                const message = $("#chatInput").val();
+                $.post("/chat", JSON.stringify({ message: message }), function(data) {
+                    $("#chatOutput").append(`<p><strong>You:</strong> ${message}</p>`);
+                    $("#chatOutput").append(`<p><strong>AI:</strong> ${data.response}</p>`);
+                    $("#chatInput").val('');
+                }, "json").fail(function(err) {
+                    $("#chatOutput").append(`<p><strong>AI:</strong> Error: ${err.responseText}</p>`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
